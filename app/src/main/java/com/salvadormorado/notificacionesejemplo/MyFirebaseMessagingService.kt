@@ -37,17 +37,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         var builder: NotificationCompat.Builder =
             NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setAutoCancel(true)
                 .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
 
         //Attach la notificacion creada a un layout custom
-        //builder = builder.setContent(getRemoteView(title, message))
+        builder = builder.setContent(getRemoteView(title, message))
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =  getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -61,13 +60,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager.notify(0, builder.build())
     }
 
-    /*@SuppressLint("RemoteViewLayout")
+    @SuppressLint("RemoteViewLayout")
     private fun getRemoteView(title: String, message: String): RemoteViews {
-        val remoteView = RemoteViews("com.example.fcmpushnotification", R.layout.notification)
+        val remoteView = RemoteViews("com.salvadormorado.notificacionesejemplo", R.layout.notification)
         remoteView.setTextViewText(R.id.title, title)
         remoteView.setTextViewText(R.id.message, message)
-        remoteView.setImageViewResource(R.id.image, R.drawable.ic_notifaction)
-
+        remoteView.setImageViewResource(R.id.image, R.drawable.message)
         return remoteView
-    }*/
+    }
 }
