@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1077816132806",
+    "project_id": "notificacionesejemplo-f0cc7",
+    "storage_bucket": "notificacionesejemplo-f0cc7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077816132806:android:ec353f0a82ea005b4c03c7",
+        "android_client_info": {
+          "package_name": "com.salvadormorado.notificacionesejemplo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077816132806-8etaen0muf8k53732tpboqle82q7u0f4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwSe57mN4_gD_6y0uI17___v83egy_440"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077816132806-8etaen0muf8k53732tpboqle82q7u0f4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
