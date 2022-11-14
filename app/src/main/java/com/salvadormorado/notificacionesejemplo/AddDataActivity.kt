@@ -102,6 +102,13 @@ class AddDataActivity : AppCompatActivity() {
                     if (response.toString().equals("{success:1}")) {
                         progressBar!!.dismiss()
                         Toast.makeText(applicationContext, "Se enviaron con exito los datos.", Toast.LENGTH_SHORT).show()
+                        textInputLayout_Name.editText!!.setText("")
+                        textInputLayout_Lastname.editText!!.setText("")
+                        textInputLayout_ControlNumber.editText!!.setText("")
+                        textInputLayout_Career.editText!!.setText("")
+                        textInputLayout_Email.editText!!.setText("")
+                        textInputLayout_Phone.editText!!.setText("")
+                        textInputLayout_Address.editText!!.setText("")
                     } else {
                         progressBar!!.dismiss()
                         Toast.makeText(applicationContext, "No se enviaron los datos, intenta de nuevo.", Toast.LENGTH_SHORT).show()
