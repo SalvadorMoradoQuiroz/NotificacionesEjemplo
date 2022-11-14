@@ -4,5 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity" />
+    tools:context=".MainActivity">
+
+    <ImageButton
+        android:id="@+id/imageButton_SendNotification"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="#6200EA"
+        android:contentDescription="ImageButton1"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_baseline_notification_add_24" />
+
+    <ImageButton
+        android:id="@+id/imageButton_AddData"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="#6200EA"
+        android:contentDescription="ImageButton2"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_baseline_person_add_alt_1_24" />
+</LinearLayout>

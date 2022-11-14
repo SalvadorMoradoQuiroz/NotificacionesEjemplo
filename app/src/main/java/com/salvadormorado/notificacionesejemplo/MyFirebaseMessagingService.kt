@@ -1,71 +1,103 @@
 package com.salvadormorado.notificacionesejemplo
-
-import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.media.RingtoneManager
 import android.os.Build
-import android.widget.RemoteViews
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-
-const val CHANNEL_ID = "NOTIFICATION_CHANNEL"
-const val CHANNEL_NAME = "com.salvadormorado.notificacionesejemplo"
+import java.util.*
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
-
-    override fun onMessageReceived(message: RemoteMessage) {
-        if (message.notification != null) {
-            generateNotification(message.notification!!.title!!, message.notification!!.body!!)
-        }
+    private var notificationManager: NotificationManager? = null
+    override fun onNewToken(s: String) {
+        /*
+            En este método recibimos el 'token' del dispositivo.
+            Lo necesitamos si vamos a comunicarnos con el dispositivo directamente.
+        */
+        super.onNewToken(s)
+        Log.e("NEW_TOKEN MyFirebaseMessagingService", s)
+        /*
+            A partir de aquí podemos hacer lo que queramos con el token como
+            enviarlo al servidor para guardarlo en una B.DD.
+            Nosotros no haremos nada con el token porque no nos vamos a comunicar con un sólo
+            dispositivo.
+         */
     }
 
-    private fun generateNotification(title: String, message: String) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        var appRunningBackground: Boolean = false
+        val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(runningAppProcessInfo)
+        appRunningBackground = runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
 
-        var pendingIntent: PendingIntent
+        // En este método recibimos el mensaje
+        val notificationIntent: Intent
+        notificationIntent = if (appRunningBackground) {
+            // Qué hacemos si la aplicación está en primer plano
+            Intent(this, MainActivity::class.java)
+        } else {
+            // Qué hacemos si la aplicación está en background
+            Intent(this, MainActivity::class.java)
+        }
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent:PendingIntent
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
+            pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_MUTABLE)
         } else {
-            pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+            pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT)
         }
 
-        var builder: NotificationCompat.Builder =
-            NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setAutoCancel(true)
-                .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
-                .setOnlyAlertOnce(true)
-                .setContentIntent(pendingIntent)
-
-        //Attach la notificacion creada a un layout custom
-        builder = builder.setContent(getRemoteView(title, message))
-
-        val notificationManager =  getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        // Configuramos la notificación para Android Oreo o superior
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            notificationManager.createNotificationChannel(notificationChannel)
+            setupChannels()
         }
-
-        notificationManager.notify(0, builder.build())
+        val notificationId = Random().nextInt(60000)
+        // Creamos la notificación en si
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.message) //a resource for your custom small icon
+                .setContentTitle(remoteMessage.data["title"]) //the "title" value you sent in your notification
+                .setContentText(remoteMessage.data["message"]) //ditto
+                .setAutoCancel(true) //dismisses the notification on click
+                .setContentIntent(pendingIntent)
+                .setSound(defaultSoundUri)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(
+            notificationId /* ID of notification */,
+            notificationBuilder.build()
+        )
     }
 
-    @SuppressLint("RemoteViewLayout")
-    private fun getRemoteView(title: String, message: String): RemoteViews {
-        val remoteView = RemoteViews("com.salvadormorado.notificacionesejemplo", R.layout.notification)
-        remoteView.setTextViewText(R.id.title, title)
-        remoteView.setTextViewText(R.id.message, message)
-        remoteView.setImageViewResource(R.id.image, R.drawable.message)
-        return remoteView
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private fun setupChannels() {
+        val adminChannel: NotificationChannel
+        adminChannel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_LOW
+        )
+        adminChannel.description = CHANNEL_DESCRIPTION
+        adminChannel.enableLights(true)
+        adminChannel.lightColor = Color.RED
+        adminChannel.enableVibration(true)
+        if (notificationManager != null) {
+            notificationManager!!.createNotificationChannel(adminChannel)
+        }
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "NOTIFICATION_CHANNEL"
+        private const val CHANNEL_NAME = "com.salvadormorado.notificacionesejemplo"
+        private const val CHANNEL_DESCRIPTION = ""
     }
 }
